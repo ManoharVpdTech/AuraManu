@@ -30,7 +30,9 @@ export const API_ENDPOINTS = {
     PUBLIC_JOB_DETAIL: (jobId: string) => `/careers/jobs/${jobId}/`,
     PUBLIC_APPLY: "/careers/apply/",
     ADMIN_JOBS: "/careers/admin/jobs/",
+    ADMIN_JOB_DETAIL: (jobId: string) => `/careers/admin/jobs/${jobId}/`,
     ADMIN_APPLICATIONS: "/careers/admin/applications/",
+    ADMIN_APPLICATION_DETAIL: (id: number) => `/careers/admin/applications/${id}/`,
   },
   CMS: {
     ADMIN_SERVICES: "/cms/admin/services/",
