@@ -41,7 +41,7 @@ export const AppRouter: React.FC = () => {
       </Route>
 
       {/* Client Protected scopes */}
-      <Route path="/portal/:subpath*">
+      <Route path="/portal/*">
         <ProtectedRoute>
           <RoleRoute allowedRoles={["CLIENT"]}>
             <ClientRoutes />
