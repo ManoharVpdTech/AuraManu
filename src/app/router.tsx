@@ -57,6 +57,13 @@ export const AppRouter: React.FC = () => {
           </RoleRoute>
         </ProtectedRoute>
       </Route>
+      <Route path="/sales/:subpath*">
+        <ProtectedRoute>
+          <RoleRoute allowedRoles={["SALES_EXECUTIVE", "ADMIN"]}>
+            <CrmRoutes />
+          </RoleRoute>
+        </ProtectedRoute>
+      </Route>
 
       {/* Recruitment HR Manager Protected scopes */}
       <Route path="/recruitment/:subpath*">
