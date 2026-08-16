@@ -15,11 +15,11 @@ export const ValuesSection: React.FC = () => {
               key={index}
               className="group relative p-8 md:p-12 border border-border/20 bg-card/5 overflow-hidden hover:border-primary/40 transition-colors duration-500"
             >
-              <div className="absolute -top-6 -right-6 text-8xl md:text-9xl font-bold font-mono text-white/5 group-hover:text-primary/10 transition-colors duration-500 select-none">
+              <div className="absolute -top-6 -right-6 text-8xl md:text-9xl font-bold font-mono text-[#63f5e8] opacity-30 group-hover:opacity-75 transition-opacity duration-500 select-none drop-shadow-[0_0_15px_rgba(99,245,232,0.4)]">
                 {value.id}
               </div>
               <div className="relative z-10 flex flex-col h-full justify-end pt-24">
-                <span className="text-primary font-mono text-sm mb-4 block">VALUE {value.id}</span>
+                <span className="text-[#63f5e8] font-mono font-bold text-sm mb-4 block drop-shadow-[0_0_6px_rgba(99,245,232,0.5)]">VALUE {value.id}</span>
                 <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors">
                   {value.title}
                 </h3>
