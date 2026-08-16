@@ -43,7 +43,7 @@ export const IndustriesHero = () => {
 
           {/* Action CTAs */}
           <div className="subpage-hero-ctas">
-            <a href="#network" className="signal-button">
+            <a href="#industries-explorer" className="signal-button">
               EXPLORE INDUSTRIES <ArrowUpRight size={15} />
             </a>
             <Link href="/contact" className="outline-button">

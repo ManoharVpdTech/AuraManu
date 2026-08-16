@@ -9,7 +9,7 @@ export const ServicesHero: React.FC = () => {
       <div
         className="subpage-hero-art"
         style={{
-          backgroundImage: `url(https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85)`,
+          backgroundImage: `url(https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=85)`,
         }}
       />
       <div className="subpage-hero-overlay" />
