@@ -34,17 +34,18 @@ export const SIDEBAR_NAV: Record<string, NavItem[]> = {
   ],
   CLIENT: [
     { title: "Dashboard", path: "/portal/dashboard", icon: "LayoutDashboard" },
-    { title: "My Projects", path: "/portal/projects", icon: "Briefcase" },
-    { title: "Requests Queue", path: "/portal/requests", icon: "MessageSquareCode" },
-    { title: "Docs Vault", path: "/portal/documents", icon: "FolderLock" },
+    { title: "Support Tickets", path: "/portal/support", icon: "MessageSquareCode" },
     { title: "User Profile", path: "/portal/profile", icon: "UserCircle" },
   ],
   SALES_EXECUTIVE: [
     { title: "CRM Dashboard", path: "/crm/dashboard", icon: "LayoutDashboard" },
     { title: "Leads Funnel", path: "/crm/leads", icon: "Contact2" },
+    { title: "Opportunities", path: "/crm/opportunities", icon: "TrendingUp" },
+    { title: "Follow-ups", path: "/crm/follow-ups", icon: "Calculator" },
+    { title: "Activity Feed", path: "/crm/activities", icon: "History" },
     { title: "Contacts Directory", path: "/crm/contacts", icon: "Users" },
     { title: "Company Registry", path: "/crm/companies", icon: "Briefcase" },
-    { title: "Activity Feed", path: "/crm/activities", icon: "History" },
+    { title: "Quotations", path: "/crm/quotations", icon: "FileText" },
   ],
   HR_MANAGER: [
     { title: "Recruitment Desk", path: "/recruitment/dashboard", icon: "LayoutDashboard" },
