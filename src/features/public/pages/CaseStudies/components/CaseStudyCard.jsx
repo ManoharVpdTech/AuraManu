@@ -8,24 +8,16 @@ export const CaseStudyCard = ({ caseStudy }) => {
       href={`/case-studies/${caseStudy.slug}`}
       className="group flex flex-col h-full bg-card border border-border/40 rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-[0_10px_30px_-15px_rgba(var(--primary),0.3)]"
     >
-      <div className="h-48 bg-[#050B14] relative border-b border-border/20 flex items-center justify-center p-6 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
-        
-        {/* Abstract mini-diagram based on category */}
-        <div className="relative z-10 flex items-center gap-4 group-hover:scale-105 transition-transform duration-500">
-          <div className="w-12 h-12 rounded bg-card border border-border/40 flex items-center justify-center shadow-lg">
-            {caseStudy.category.includes("Cloud") ? <Cloud className="w-6 h-6 text-cyan-400" /> : <Server className="w-6 h-6 text-primary" />}
-          </div>
-          <div className="w-8 h-[2px] bg-border relative overflow-hidden">
-             <div className="absolute top-0 left-0 h-full w-1/2 bg-primary group-hover:animate-ping" />
-          </div>
-          <div className="w-12 h-12 rounded bg-card border border-border/40 flex items-center justify-center shadow-lg">
-            <Database className="w-6 h-6 text-orange-400" />
-          </div>
-        </div>
+      <div className="h-48 bg-[#050B14] relative border-b border-border/20 overflow-hidden">
+        <img
+          src={caseStudy.coverImage || "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80"}
+          alt={caseStudy.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050B14]/80 via-transparent to-transparent pointer-events-none" />
 
         <div className="absolute bottom-3 right-3 flex gap-2">
-           {caseStudy.technologies.cloud.slice(0, 1).map((tech, i) => (
+           {caseStudy.technologies.cloud?.slice(0, 1).map((tech, i) => (
              <span key={i} className="text-[10px] font-mono font-bold bg-background/80 border border-border/50 text-muted-foreground px-2 py-0.5 rounded backdrop-blur-sm">
                {tech}
              </span>

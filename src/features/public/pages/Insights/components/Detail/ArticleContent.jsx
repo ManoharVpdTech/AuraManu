@@ -16,13 +16,13 @@ export const ArticleContent = ({ content }) => {
       // H2
       if (block.startsWith("## ")) {
         const id = block.replace("## ", "").toLowerCase().replace(/[^\w]+/g, '-');
-        return <h2 key={index} id={id} className="text-3xl font-bold mt-16 mb-6 text-foreground">{block.replace("## ", "")}</h2>;
+        return <h2 key={index} id={id} className="text-2xl sm:text-3xl font-bold mt-10 mb-4 text-foreground leading-snug">{block.replace("## ", "")}</h2>;
       }
       
       // H3
       if (block.startsWith("### ")) {
         const id = block.replace("### ", "").toLowerCase().replace(/[^\w]+/g, '-');
-        return <h3 key={index} id={id} className="text-2xl font-bold mt-12 mb-4 text-foreground">{block.replace("### ", "")}</h3>;
+        return <h3 key={index} id={id} className="text-xl sm:text-2xl font-bold mt-8 mb-3 text-foreground leading-snug">{block.replace("### ", "")}</h3>;
       }
 
       // Code Block

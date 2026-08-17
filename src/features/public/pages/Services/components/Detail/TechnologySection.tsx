@@ -10,9 +10,9 @@ export const TechnologySection: React.FC<TechnologySectionProps> = ({ service })
   if (!service.technologies || service.technologies.length === 0) return null;
 
   return (
-    <section className="py-24 bg-background">
+    <section className="py-10 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row gap-12 items-start">
+        <div className="flex flex-col md:flex-row gap-8 items-start">
           <div className="md:w-1/3">
             <h2 className="text-3xl font-bold mb-4">Technology & Engineering</h2>
             <p className="text-muted-foreground">

@@ -12,10 +12,10 @@ const steps = [
 
 export const ApproachSection: React.FC = () => {
   return (
-    <section className="py-20 bg-[#060c18] border-y border-[rgba(99,245,232,0.12)]">
+    <section className="py-10 bg-[#060c18] border-y border-[rgba(99,245,232,0.12)]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-[#eef4f3] tracking-tight">
             Our Approach
           </h2>

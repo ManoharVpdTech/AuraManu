@@ -3,10 +3,10 @@ import { ArrowRight } from "lucide-react";
 
 export const TransformationSection = () => {
   return (
-    <section className="py-24 bg-background border-b border-border/10">
+    <section className="py-8 bg-background border-b border-border/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Transformation</h2>
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold">Transformation</h2>
         </div>
 
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8">
