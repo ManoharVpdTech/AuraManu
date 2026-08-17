@@ -101,7 +101,7 @@ export const CareersPage: React.FC = () => {
         ) : (
           <div className="grid gap-4">
             {jobs.map((job) => (
-              <Link key={job.id} href={`/careers/${job.id}`} className="block group">
+              <Link key={job.job_id} href={`/careers/${job.job_id}`} className="block group">
                 <div className="p-6 md:p-8 border border-[rgba(140,174,187,0.2)] bg-[#0a111c] rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-[#63f5e8] hover:bg-[#0d1624] transition-all">
                   <div>
                     <div className="flex items-center gap-3 mb-3">
