@@ -630,10 +630,10 @@ h1 em, h2 em, h3 em { font-style: normal; color: #b7c4c5; }
    ═══════════════════════════════════════════════════════════════ */
 .subpage-immersive-hero {
   position: relative;
-  min-height: 68vh;
+  min-height: 56vh;
   display: flex;
   align-items: center;
-  padding: clamp(7.5rem, 14vh, 10.5rem) var(--site-pad) 4.5rem;
+  padding: clamp(6rem, 12vh, 9rem) var(--site-pad) 3.5rem;
   background: #050811;
   overflow: hidden;
   isolation: isolate;

@@ -3,7 +3,7 @@ import { Link } from "wouter";
 
 export const ServiceCTA: React.FC = () => {
   return (
-    <section className="py-24 bg-[#050B14] border-t border-primary/20">
+    <section className="py-14 bg-[#050B14] border-t border-primary/20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Have an Enterprise Technology Challenge?</h2>
         

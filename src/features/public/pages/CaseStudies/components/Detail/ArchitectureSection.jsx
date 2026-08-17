@@ -3,15 +3,15 @@ import { Server, Database, Cloud, Globe } from "lucide-react";
 
 export const ArchitectureSection = ({ caseStudy }) => {
   return (
-    <section className="py-24 bg-[#0a0f18] border-b border-border/10">
+    <section className="py-8 bg-[#0a0f18] border-b border-border/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="max-w-4xl mb-16">
-          <div className="flex items-center gap-4 mb-8">
-            <span className="text-4xl font-bold text-primary font-mono opacity-50">02</span>
-            <h2 className="text-3xl font-bold text-white">Proposed Architecture</h2>
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-2xl font-bold text-primary font-mono opacity-50">02</span>
+            <h2 className="text-2xl font-bold text-white">Proposed Architecture</h2>
           </div>
-          <p className="text-xl text-gray-400 leading-relaxed">
+          <p className="text-base text-gray-400 leading-relaxed">
             {caseStudy.architecture.description}
           </p>
         </div>

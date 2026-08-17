@@ -47,33 +47,14 @@ export const FeaturedCaseStudy = ({ caseStudy }) => {
             </Link>
           </div>
           
-          <div className="lg:w-1/2 bg-[#050B14] p-8 md:p-12 relative flex items-center justify-center border-l border-border/20">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 pointer-events-none" />
-            
-            {/* Abstract Architecture Diagram */}
-            <div className="relative z-10 w-full max-w-md">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 border border-border/40 bg-card rounded-lg flex items-center gap-3">
-                  <Server className="w-5 h-5 text-cyan-400" />
-                  <span className="text-xs font-mono font-bold text-gray-300">API GATEWAY</span>
-                </div>
-                <div className="p-4 border border-border/40 bg-card rounded-lg flex items-center gap-3">
-                  <Shield className="w-5 h-5 text-green-400" />
-                  <span className="text-xs font-mono font-bold text-gray-300">IAM / RBAC</span>
-                </div>
-                <div className="col-span-2 p-6 border border-primary/40 bg-primary/10 rounded-lg flex flex-col items-center justify-center gap-3 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-pulse" />
-                  <Blocks className="w-8 h-8 text-primary relative z-10" />
-                  <span className="text-sm font-mono font-bold text-white relative z-10">MICROSERVICES MESH</span>
-                </div>
-                <div className="col-span-2 p-4 border border-border/40 bg-card rounded-lg flex items-center justify-center gap-3">
-                  <Database className="w-5 h-5 text-orange-400" />
-                  <span className="text-xs font-mono font-bold text-gray-300">DATA LAYER</span>
-                </div>
-              </div>
-            </div>
+          <div className="lg:w-1/2 bg-[#050B14] relative overflow-hidden border-l border-border/20 min-h-[300px]">
+            <img
+              src={caseStudy.coverImage || "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80"}
+              alt={caseStudy.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-card via-transparent to-transparent opacity-80" />
           </div>
-          
         </div>
       </div>
     </section>

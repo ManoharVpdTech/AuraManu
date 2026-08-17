@@ -5,21 +5,18 @@ export const SecurityControls = ({ caseStudy }) => {
   if (!caseStudy.securityControls || caseStudy.securityControls.length === 0) return null;
 
   return (
-    <section className="py-24 bg-[#0a0f18] border-b border-border/10">
+    <section className="py-8 bg-[#0a0f18] border-b border-border/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mb-16">
-          <div className="flex items-center gap-4 mb-8">
-            <span className="text-4xl font-bold text-primary font-mono opacity-50">07</span>
-            <h2 className="text-3xl font-bold text-white">Security Controls</h2>
-          </div>
-          <p className="text-gray-400">Engineered with defense-in-depth methodologies to protect critical enterprise infrastructure.</p>
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-2xl font-bold text-primary font-mono opacity-50">07</span>
+          <h2 className="text-2xl font-bold text-white">Security Controls</h2>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {caseStudy.securityControls.map((control, idx) => (
-            <div key={idx} className="p-6 bg-card/10 border border-border/20 rounded-lg flex items-center gap-4">
-              <ShieldCheck className="w-6 h-6 text-green-400 flex-shrink-0" />
-              <span className="font-bold text-gray-200">{control}</span>
+            <div key={idx} className="p-4 bg-card/10 border border-border/20 rounded-xl flex items-center gap-3.5">
+              <ShieldCheck className="w-5 h-5 text-green-400 flex-shrink-0" />
+              <span className="font-bold text-gray-200 text-sm">{control}</span>
             </div>
           ))}
         </div>

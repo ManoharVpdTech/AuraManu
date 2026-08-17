@@ -8,6 +8,7 @@ export const caseStudiesData = [
     industry: "banking",
     country: "United States",
     category: "Cloud Modernization",
+    coverImage: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80",
 
     challenge: "The client operated on a highly fragmented, 15-year-old monolithic legacy architecture. The system struggled to handle peak transaction volumes, suffered from localized outages, and posed significant security vulnerabilities due to outdated technology stacks. Regulatory compliance was increasingly difficult to maintain.",
 
@@ -91,6 +92,7 @@ export const caseStudiesData = [
     industry: "logistics-supply-chain",
     country: "Germany",
     category: "AI/ML Engineering",
+    coverImage: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80",
 
     challenge: "The logistics provider faced chronic delays and massive operational overhead due to manual routing, unpredictable fleet maintenance, and lack of real-time supply chain visibility across international borders.",
 
@@ -166,6 +168,7 @@ export const caseStudiesData = [
     industry: "healthcare",
     country: "United Kingdom",
     category: "Custom Software Development",
+    coverImage: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
 
     challenge: "The healthcare network urgently required a highly secure, scalable telehealth platform capable of handling millions of simultaneous video consultations while strictly adhering to complex regional health data regulations and preventing unauthorized access.",
 
@@ -237,3 +240,4 @@ export const caseStudiesData = [
     relatedIndustries: ["insurance", "government-public-sector"]
   }
 ];
+
