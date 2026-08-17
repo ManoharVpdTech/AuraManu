@@ -11,7 +11,6 @@ import SupportRoutes from "../routes/SupportRoutes";
 import CmsConsoleRoutes from "../routes/CmsConsoleRoutes";
 import ProtectedRoute from "../routes/ProtectedRoute";
 import RoleRoute from "../routes/RoleRoute";
-import NotFound from "../features/cms/pages/NotFound";
 
 export const AppRouter: React.FC = () => {
   return (
@@ -42,6 +41,13 @@ export const AppRouter: React.FC = () => {
 
       {/* Client Protected scopes */}
       <Route path="/portal/*">
+        <ProtectedRoute>
+          <RoleRoute allowedRoles={["CLIENT"]}>
+            <ClientRoutes />
+          </RoleRoute>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/client/:subpath*">
         <ProtectedRoute>
           <RoleRoute allowedRoles={["CLIENT"]}>
             <ClientRoutes />

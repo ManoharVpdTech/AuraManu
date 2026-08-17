@@ -44,32 +44,65 @@ export interface SupportTicketDetail {
 
 export interface SupportTicketCreateInput {
   subject: string;
-  category: TicketCategory;
-  priority: TicketPriority;
+  category?: TicketCategory;
+  priority?: TicketPriority;
 }
 
 export interface SupportTicketUpdateInput {
   subject?: string;
   category?: TicketCategory;
   priority?: TicketPriority;
+  resolution_notes?: string;
+}
+
+export interface ExecutiveTicketUpdateInput {
+  subject?: string;
+  category?: TicketCategory;
+  priority?: TicketPriority;
+  status?: TicketStatus;
+  assigned_to?: number | null;
+  resolution_notes?: string;
+}
+
+export interface AdminTicketUpdateInput {
+  subject?: string;
+  category?: TicketCategory;
+  priority?: TicketPriority;
+  status?: TicketStatus;
+  assigned_to?: number | null;
+  client_user?: number;
+  resolution_notes?: string;
+}
+
+export interface AssignableUser {
+  id: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
 }
 
 export interface DashboardTicketStats {
   total: number;
   open: number;
+  assigned: number;
   inProgress: number;
   awaitingClient: number;
   resolved: number;
   closed: number;
+  critical: number;
 }
 
 export function buildTicketStats(tickets: SupportTicketItem[]): DashboardTicketStats {
   return {
     total: tickets.length,
-    open: tickets.filter((t) => t.status === "open" || t.status === "assigned").length,
+    open: tickets.filter((t) => t.status === "open").length,
+    assigned: tickets.filter((t) => t.status === "assigned").length,
     inProgress: tickets.filter((t) => t.status === "in_progress").length,
     awaitingClient: tickets.filter((t) => t.status === "awaiting_client").length,
     resolved: tickets.filter((t) => t.status === "resolved").length,
     closed: tickets.filter((t) => t.status === "closed").length,
+    critical: tickets.filter((t) => t.priority === "critical").length,
   };
 }
