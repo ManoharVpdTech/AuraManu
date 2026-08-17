@@ -30,14 +30,26 @@ export const JobDetailsPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-background pt-16 pb-24">
-      <header className="border-b border-border/40 bg-card/20 pt-16 pb-12 mb-16">
+    <div className="bg-background pt-24 pb-24">
+      <header className="border-b border-border/40 bg-card/20 pt-8 pb-12 mb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href="/careers" className="inline-flex items-center text-sm font-mono text-muted-foreground hover:text-primary mb-8 transition-colors">
+          <Link href="/careers" className="inline-flex items-center text-sm font-mono text-muted-foreground hover:text-primary mb-6 transition-colors">
             <ArrowLeft className="mr-2 h-4 w-4" /> BACK TO ALL OPENINGS
           </Link>
           <div className="max-w-4xl">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">{job.title}</h1>
+            <h1 
+              style={{ 
+                fontSize: "clamp(2rem, 3.5vw, 2.75rem)", 
+                lineHeight: "1.2", 
+                fontWeight: 700, 
+                letterSpacing: "-0.02em", 
+                margin: "0.5rem 0 1.25rem",
+                color: "#f8fafc",
+                maxWidth: "100%"
+              }}
+            >
+              {job.title}
+            </h1>
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
               <span className="flex items-center font-mono text-primary"><Briefcase className="mr-2 h-4 w-4" /> {job.department}</span>
               <span className="flex items-center"><MapPin className="mr-2 h-4 w-4" /> {job.location}</span>
