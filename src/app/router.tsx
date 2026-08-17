@@ -98,6 +98,13 @@ export const AppRouter: React.FC = () => {
           </RoleRoute>
         </ProtectedRoute>
       </Route>
+      <Route path="/content/:subpath*">
+        <ProtectedRoute>
+          <RoleRoute allowedRoles={["CONTENT_MANAGER", "ADMIN"]}>
+            <CmsConsoleRoutes />
+          </RoleRoute>
+        </ProtectedRoute>
+      </Route>
 
       {/* Public routes and fallback */}
       <Route component={PublicRoutes} />

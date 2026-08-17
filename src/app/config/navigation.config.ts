@@ -57,7 +57,9 @@ export const SIDEBAR_NAV: Record<string, NavItem[]> = {
     { title: "CMS Control", path: "/cms/dashboard", icon: "LayoutDashboard" },
     { title: "Services Catalog", path: "/cms/services", icon: "Briefcase" },
     { title: "Case Studies", path: "/cms/case-studies", icon: "FileText" },
+    { title: "Industries", path: "/cms/industries", icon: "Building" },
     { title: "Blog Engine", path: "/cms/blog", icon: "MessageSquareCode" },
+    { title: "Categories", path: "/cms/categories", icon: "Tag" },
   ],
   SUPPORT_EXECUTIVE: [
     { title: "Support Desk", path: "/support/dashboard", icon: "LayoutDashboard" },
