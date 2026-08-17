@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import useAuth from "../../../hooks/useAuth";
 import Card from "../../../components/ui/card";
 import Button from "../../../components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 
 export const Login: React.FC = () => {
   const { login, isLoading } = useAuth();
@@ -13,15 +13,26 @@ export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [, setLocation] = useLocation();
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!username || !password) {
-      setError("Please fill in all credentials.");
+    const errors: { username?: string; password?: string } = {};
+    if (!username.trim()) {
+      errors.username = "Please enter your username or email address.";
+    }
+    if (!password) {
+      errors.password = "Please enter your password.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
+
+    setFieldErrors({});
 
     try {
       await login(username, password);
@@ -46,7 +57,30 @@ export const Login: React.FC = () => {
         setLocation("/");
       }
     } catch (err: any) {
-      setError(err?.response?.data?.detail || err?.message || "Failed to authenticate.");
+      const status = err?.response?.status;
+      const resData = err?.response?.data;
+      
+      let errorMsg = "Invalid username or password. Please verify your credentials and selected role.";
+
+      if (resData?.detail) {
+        errorMsg = resData.detail;
+      } else if (resData?.non_field_errors) {
+        errorMsg = Array.isArray(resData.non_field_errors)
+          ? resData.non_field_errors.join(", ")
+          : String(resData.non_field_errors);
+      } else if (resData?.error) {
+        errorMsg = resData.error;
+      } else if (resData?.message) {
+        errorMsg = resData.message;
+      } else if (typeof resData === "string") {
+        errorMsg = resData;
+      } else if (status === 400 || status === 401) {
+        errorMsg = "Invalid username or password. Please verify your credentials and selected role.";
+      } else if (err?.code === "ERR_NETWORK" || err?.message?.includes("Network Error")) {
+        errorMsg = "Unable to connect to the authentication server. Please ensure the backend is running.";
+      }
+
+      setError(errorMsg);
     }
   };
 
@@ -54,6 +88,22 @@ export const Login: React.FC = () => {
     setRole(selectedRole);
     setUsername(defaultUser);
     setPassword(defaultPass);
+    setError("");
+    setFieldErrors({});
+  };
+
+  const handleUsernameChange = (val: string) => {
+    setUsername(val);
+    if (fieldErrors.username) {
+      setFieldErrors((prev) => ({ ...prev, username: undefined }));
+    }
+  };
+
+  const handlePasswordChange = (val: string) => {
+    setPassword(val);
+    if (fieldErrors.password) {
+      setFieldErrors((prev) => ({ ...prev, password: undefined }));
+    }
   };
 
   return (
@@ -66,18 +116,23 @@ export const Login: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <form noValidate onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {error && (
           <div style={{
             color: "#ef4444",
             backgroundColor: "rgba(239, 68, 68, 0.08)",
-            border: "1px solid rgba(239, 68, 68, 0.15)",
-            padding: "0.75rem",
+            border: "1px solid rgba(239, 68, 68, 0.2)",
+            padding: "0.85rem 1rem",
             borderRadius: "4px",
             fontSize: "0.85rem",
             fontFamily: "IBM Plex Mono, monospace",
+            display: "flex",
+            alignItems: "flex-start",
+            gap: "0.5rem",
+            lineHeight: 1.4,
           }}>
-            ERROR // {error}
+            <AlertCircle size={16} style={{ marginTop: "2px", flexShrink: 0 }} />
+            <span>ERROR // {error}</span>
           </div>
         )}
 
@@ -126,7 +181,7 @@ export const Login: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <label htmlFor="username" style={{ fontSize: "0.75rem", fontFamily: "IBM Plex Mono, monospace", color: "#64748b" }}>
             USERNAME OR EMAIL
           </label>
@@ -134,16 +189,15 @@ export const Login: React.FC = () => {
             id="username"
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            placeholder="administrator"
+            onChange={(e) => handleUsernameChange(e.target.value)}
+            placeholder="e.g. administrator or user@aurexion.io"
             style={{
               width: "100%",
               height: "44px",
               padding: "0 0.75rem",
               borderRadius: "4px",
               backgroundColor: "#050811",
-              border: "1px solid #1e293b",
+              border: fieldErrors.username ? "1px solid #ef4444" : "1px solid #1e293b",
               color: "#eef4f3",
               fontSize: "0.875rem",
               fontFamily: "inherit",
@@ -151,12 +205,21 @@ export const Login: React.FC = () => {
               transition: "border-color 150ms",
               boxSizing: "border-box",
             }}
-            onFocus={(e) => (e.target.style.borderColor = "#63f5e8")}
-            onBlur={(e) => (e.target.style.borderColor = "#1e293b")}
+            onFocus={(e) => {
+              if (!fieldErrors.username) e.target.style.borderColor = "#63f5e8";
+            }}
+            onBlur={(e) => {
+              if (!fieldErrors.username) e.target.style.borderColor = "#1e293b";
+            }}
           />
+          {fieldErrors.username && (
+            <span style={{ fontSize: "0.75rem", color: "#ef4444", fontFamily: "IBM Plex Mono, monospace" }}>
+              {fieldErrors.username}
+            </span>
+          )}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label htmlFor="password" style={{ fontSize: "0.75rem", fontFamily: "IBM Plex Mono, monospace", color: "#64748b" }}>
               PASSWORD
@@ -173,16 +236,15 @@ export const Login: React.FC = () => {
               id="password"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
+              onChange={(e) => handlePasswordChange(e.target.value)}
+              placeholder="Enter your password"
               style={{
                 width: "100%",
                 height: "44px",
                 padding: "0 2.5rem 0 0.75rem",
                 borderRadius: "4px",
                 backgroundColor: "#050811",
-                border: "1px solid #1e293b",
+                border: fieldErrors.password ? "1px solid #ef4444" : "1px solid #1e293b",
                 color: "#eef4f3",
                 fontSize: "0.875rem",
                 fontFamily: "inherit",
@@ -190,8 +252,12 @@ export const Login: React.FC = () => {
                 transition: "border-color 150ms",
                 boxSizing: "border-box",
               }}
-              onFocus={(e) => (e.target.style.borderColor = "#63f5e8")}
-              onBlur={(e) => (e.target.style.borderColor = "#1e293b")}
+              onFocus={(e) => {
+                if (!fieldErrors.password) e.target.style.borderColor = "#63f5e8";
+              }}
+              onBlur={(e) => {
+                if (!fieldErrors.password) e.target.style.borderColor = "#1e293b";
+              }}
             />
             <button
               type="button"
@@ -213,6 +279,11 @@ export const Login: React.FC = () => {
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          {fieldErrors.password && (
+            <span style={{ fontSize: "0.75rem", color: "#ef4444", fontFamily: "IBM Plex Mono, monospace" }}>
+              {fieldErrors.password}
+            </span>
+          )}
         </div>
 
         <Button type="submit" glow style={{ width: "100%", height: "46px", marginTop: "8px" }} disabled={isLoading}>
