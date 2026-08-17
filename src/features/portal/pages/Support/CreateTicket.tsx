@@ -12,18 +12,18 @@ import type { TicketCategory, TicketPriority } from "../../types/portal.types";
 import useCreateTicket from "../../hooks/useCreateTicket";
 
 const CATEGORY_OPTIONS: { value: TicketCategory; label: string }[] = [
-  { value: "bug", label: "Bug" },
-  { value: "enhancement", label: "Enhancement" },
-  { value: "security", label: "Security" },
-  { value: "infrastructure", label: "Infrastructure" },
-  { value: "general", label: "General" },
+  { value: "general", label: "General Inquiry" },
+  { value: "bug", label: "Bug Report" },
+  { value: "enhancement", label: "Feature Request / Enhancement" },
+  { value: "security", label: "Security Incident" },
+  { value: "infrastructure", label: "Infrastructure / Server Issue" },
 ];
 
 const PRIORITY_OPTIONS: { value: TicketPriority; label: string }[] = [
   { value: "low", label: "Low" },
-  { value: "medium", label: "Medium" },
+  { value: "medium", label: "Medium (Standard)" },
   { value: "high", label: "High" },
-  { value: "critical", label: "Critical" },
+  { value: "critical", label: "Critical (Urgent)" },
 ];
 
 export const CreateTicket: React.FC = () => {
@@ -31,8 +31,8 @@ export const CreateTicket: React.FC = () => {
   const [, setLocation] = useLocation();
 
   const [subject, setSubject] = useState("");
-  const [category, setCategory] = useState<TicketCategory | undefined>(undefined);
-  const [priority, setPriority] = useState<TicketPriority | undefined>(undefined);
+  const [category, setCategory] = useState<TicketCategory>("general");
+  const [priority, setPriority] = useState<TicketPriority>("medium");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -48,7 +48,11 @@ export const CreateTicket: React.FC = () => {
     if (Object.keys(nextErrors).length > 0) return;
 
     try {
-      await create.create({ subject: subject.trim(), category: category as TicketCategory, priority: priority as TicketPriority });
+      await create.create({
+        subject: subject.trim(),
+        category,
+        priority,
+      });
       setSubmitted(true);
       window.setTimeout(() => setLocation("/portal/support/tickets"), 1200);
     } catch {
@@ -70,18 +74,18 @@ export const CreateTicket: React.FC = () => {
       <PageHeader
         eyebrow="CLIENT SUPPORT"
         title="Create Support Ticket"
-        description="Submit a support request. The Aurexion support team will process it and update its status."
+        description="Submit a support request to the Aurexion technical engineering team. We will process your ticket promptly."
       />
 
       {submitted ? (
-        <Card>
+        <Card glowOnHover>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", alignItems: "flex-start" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#4ade80" }}>
               <CheckCircle2 size={20} />
               <span style={{ fontWeight: 600 }}>Ticket submitted successfully</span>
             </div>
             <p style={{ color: "#94a3b8", fontSize: "0.875rem", margin: 0 }}>
-              Your ticket has been created and is now visible in your ticket queue.
+              Your support ticket has been created and assigned to the queue. Redirecting to your tickets...
             </p>
             <Link href="/portal/support/tickets">
               <Button variant="outline" size="sm">
@@ -163,7 +167,7 @@ export const CreateTicket: React.FC = () => {
 
             <Button type="submit" glow style={{ alignSelf: "flex-start" }} disabled={create.isLoading || submitted}>
               <Plus size={14} />
-              {create.isLoading ? "Submitting..." : "Submit Ticket"}
+              {create.isLoading ? "Submitting Ticket..." : "Submit Ticket"}
             </Button>
           </form>
         </Card>

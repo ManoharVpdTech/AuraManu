@@ -25,6 +25,9 @@ export const ClientRoutes: React.FC = () => {
         <Route path="/portal/profile" component={Profile} />
         <Route path="/portal/support" component={SupportHome} />
         <Route path="/portal/support/tickets/create" component={CreateTicket} />
+        <Route path="/portal/support/tickets/new" component={CreateTicket} />
+        <Route path="/portal/support/create" component={CreateTicket} />
+        <Route path="/portal/support/new" component={CreateTicket} />
         <Route path="/portal/support/tickets/:id" component={TicketDetails} />
         <Route path="/portal/support/tickets" component={TicketList} />
       </Switch>

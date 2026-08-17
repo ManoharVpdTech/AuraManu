@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useParams } from "wouter";
-import { ArrowLeft, Pencil, Save, X } from "lucide-react";
+import { ArrowLeft, Pencil, Save, X, LifeBuoy } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
@@ -15,18 +15,18 @@ import useMyTicket from "../../hooks/useMyTicket";
 import useUpdateTicket from "../../hooks/useUpdateTicket";
 
 const CATEGORY_OPTIONS: { value: TicketCategory; label: string }[] = [
-  { value: "bug", label: "Bug" },
-  { value: "enhancement", label: "Enhancement" },
-  { value: "security", label: "Security" },
-  { value: "infrastructure", label: "Infrastructure" },
-  { value: "general", label: "General" },
+  { value: "general", label: "General Inquiry" },
+  { value: "bug", label: "Bug Report" },
+  { value: "enhancement", label: "Feature Request / Enhancement" },
+  { value: "security", label: "Security Incident" },
+  { value: "infrastructure", label: "Infrastructure / Server Issue" },
 ];
 
 const PRIORITY_OPTIONS: { value: TicketPriority; label: string }[] = [
   { value: "low", label: "Low" },
-  { value: "medium", label: "Medium" },
+  { value: "medium", label: "Medium (Standard)" },
   { value: "high", label: "High" },
-  { value: "critical", label: "Critical" },
+  { value: "critical", label: "Critical (Urgent)" },
 ];
 
 interface InfoRowProps {
@@ -102,7 +102,8 @@ export const TicketDetails: React.FC = () => {
         description={ticket.data ? `${ticket.data.ticket_id} · opened ${formatDateTime(ticket.data.created_at)}` : "Loading ticket..."}
         actions={
           ticket.data &&
-          !editing && (
+          !editing &&
+          ["open", "assigned", "in_progress"].includes(ticket.data.status) && (
             <Button variant="outline" size="sm" onClick={startEdit}>
               <Pencil size={14} />
               Edit Details
@@ -129,38 +130,50 @@ export const TicketDetails: React.FC = () => {
           )}
 
           <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
-            <Card>
+            <Card glowOnHover>
               <h3 style={{ margin: 0, color: "#63f5e8", marginBottom: "1rem" }}>Ticket Information</h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-                <InfoRow label="Ticket ID" value={ticket.data.ticket_id} />
+                <InfoRow label="Ticket Reference" value={ticket.data.ticket_id} />
                 <InfoRow label="Status" value={<TicketStatusBadge status={ticket.data.status} />} />
                 <InfoRow label="Category" value={<TicketCategoryBadge category={ticket.data.category} />} />
                 <InfoRow label="Priority" value={<TicketPriorityBadge priority={ticket.data.priority} />} />
-                <InfoRow label="Assigned To" value={ticket.data.assigned_to || "Not yet assigned"} />
-                <InfoRow label="Client Account" value={ticket.data.client_user} />
+                <InfoRow label="Assigned Executive" value={ticket.data.assigned_to || "Unassigned"} />
+                <InfoRow label="Client Account" value={ticket.data.client_user || "My Account"} />
               </div>
             </Card>
 
-            <Card>
-              <h3 style={{ margin: 0, color: "#63f5e8", marginBottom: "1rem" }}>Timeline</h3>
+            <Card glowOnHover>
+              <h3 style={{ margin: 0, color: "#63f5e8", marginBottom: "1rem" }}>Timeline & Activity</h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-                <InfoRow label="Created" value={formatDateTime(ticket.data.created_at)} />
-                <InfoRow label="Last Updated" value={formatDateTime(ticket.data.updated_at)} />
-                <InfoRow label="Closed" value={ticket.data.closed_at ? formatDateTime(ticket.data.closed_at) : "Still open"} />
+                <InfoRow label="Created Date" value={formatDateTime(ticket.data.created_at)} />
+                <InfoRow label="Last Update" value={formatDateTime(ticket.data.updated_at)} />
+                <InfoRow label="Closed Date" value={ticket.data.closed_at ? formatDateTime(ticket.data.closed_at) : "Active"} />
               </div>
             </Card>
           </div>
 
-          <Card>
-            <h3 style={{ margin: 0, color: "#63f5e8", marginBottom: "0.75rem" }}>Resolution Notes</h3>
-            <p style={{ color: "#cbd5e1", fontSize: "0.9rem", margin: 0, whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
-              {ticket.data.resolution_notes || "No resolution notes recorded yet."}
-            </p>
+          <Card glowOnHover>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+              <LifeBuoy size={18} style={{ color: "#63f5e8" }} />
+              <h3 style={{ margin: 0, color: "#63f5e8" }}>Support Team Resolution Notes</h3>
+            </div>
+            <div style={{
+              backgroundColor: "rgba(12, 18, 34, 0.6)",
+              border: "1px solid #1e293b",
+              borderRadius: "6px",
+              padding: "1rem",
+              color: "#cbd5e1",
+              fontSize: "0.9rem",
+              lineHeight: 1.6,
+              whiteSpace: "pre-wrap"
+            }}>
+              {ticket.data.resolution_notes ? ticket.data.resolution_notes : "No resolution notes have been posted by the support team yet. Our engineering team is currently reviewing your ticket."}
+            </div>
           </Card>
 
           {editing && (
-            <Card>
-              <h3 style={{ margin: 0, color: "#63f5e8", marginBottom: "1rem" }}>Edit Ticket Details</h3>
+            <Card glowOnHover>
+              <h3 style={{ margin: 0, color: "#63f5e8", marginBottom: "1rem" }}>Edit Ticket Information</h3>
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
