@@ -7,13 +7,36 @@ import { useJobDetails } from "../../hooks/usePublicContent";
 import { publicService } from "../../services/publicService";
 import { ArrowLeft, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
+interface CountryCodeOption {
+  code: string;
+  name: string;
+  flag: string;
+  digitsMin: number;
+  digitsMax: number;
+  placeholder: string;
+}
+
+const COUNTRY_CODES: CountryCodeOption[] = [
+  { code: "+1", name: "United States / Canada", flag: "🇺🇸", digitsMin: 10, digitsMax: 10, placeholder: "555 123 4567" },
+  { code: "+91", name: "India", flag: "🇮🇳", digitsMin: 10, digitsMax: 10, placeholder: "98765 43210" },
+  { code: "+44", name: "United Kingdom", flag: "🇬🇧", digitsMin: 10, digitsMax: 11, placeholder: "7911 123456" },
+  { code: "+61", name: "Australia", flag: "🇦🇺", digitsMin: 9, digitsMax: 9, placeholder: "412 345 678" },
+  { code: "+971", name: "UAE", flag: "🇦🇪", digitsMin: 9, digitsMax: 9, placeholder: "50 123 4567" },
+  { code: "+65", name: "Singapore", flag: "🇸🇬", digitsMin: 8, digitsMax: 8, placeholder: "8123 4567" },
+  { code: "+49", name: "Germany", flag: "🇩🇪", digitsMin: 10, digitsMax: 11, placeholder: "151 12345678" },
+  { code: "+33", name: "France", flag: "🇫🇷", digitsMin: 9, digitsMax: 9, placeholder: "6 12 34 56 78" },
+  { code: "+81", name: "Japan", flag: "🇯🇵", digitsMin: 10, digitsMax: 10, placeholder: "90 1234 5678" },
+  { code: "+41", name: "Switzerland", flag: "🇨🇭", digitsMin: 9, digitsMax: 9, placeholder: "78 123 45 67" },
+  { code: "+966", name: "Saudi Arabia", flag: "🇸🇦", digitsMin: 9, digitsMax: 9, placeholder: "50 123 4567" },
+  { code: "+86", name: "China", flag: "🇨🇳", digitsMin: 11, digitsMax: 11, placeholder: "138 1234 5678" },
+  { code: "+353", name: "Ireland", flag: "🇮🇪", digitsMin: 9, digitsMax: 9, placeholder: "87 123 4567" },
+  { code: "+31", name: "Netherlands", flag: "🇳🇱", digitsMin: 9, digitsMax: 9, placeholder: "6 12345678" },
+  { code: "+other", name: "Other (International)", flag: "🌐", digitsMin: 7, digitsMax: 15, placeholder: "Enter complete phone number" },
+];
+
 const applySchema = z.object({
   name: z.string().min(2, "Full name is required"),
   email: z.string().email("Valid email address is required"),
-  phone: z.string()
-    .min(7, "Phone number is too short")
-    .max(20, "Phone number is too long")
-    .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]+$/, "Please enter a valid phone number (digits and optional country code only)"),
   coverLetter: z.string().optional(),
 });
 
@@ -31,36 +54,133 @@ export const ApplyPage: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  // Country code & Phone Number State
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>("+91");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [phoneError, setPhoneError] = useState<string>("");
+
+  const currentCountry = COUNTRY_CODES.find((c) => c.code === selectedCountryCode) || COUNTRY_CODES[0];
+
   const { register, handleSubmit, formState: { errors } } = useForm<ApplyFormValues>({
     resolver: zodResolver(applySchema)
   });
 
+  const validatePhoneNumber = (phone: string, countryCode: string): string => {
+    const rawDigits = phone.replace(/\D/g, "");
+    const country = COUNTRY_CODES.find((c) => c.code === countryCode) || COUNTRY_CODES[0];
+
+    if (!rawDigits) {
+      return "Phone number is required";
+    }
+
+    if (country.code === "+other") {
+      if (rawDigits.length < 7 || rawDigits.length > 15) {
+        return "Please enter a valid international phone number (7 to 15 digits)";
+      }
+      return "";
+    }
+
+    if (country.digitsMin === country.digitsMax) {
+      if (rawDigits.length !== country.digitsMin) {
+        return `${country.name} phone number must be exactly ${country.digitsMin} digits (${rawDigits.length}/${country.digitsMin})`;
+      }
+    } else {
+      if (rawDigits.length < country.digitsMin || rawDigits.length > country.digitsMax) {
+        return `${country.name} phone number must be between ${country.digitsMin} and ${country.digitsMax} digits (${rawDigits.length} entered)`;
+      }
+    }
+
+    return "";
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    const country = COUNTRY_CODES.find((c) => c.code === selectedCountryCode) || COUNTRY_CODES[0];
+    
+    // Hard restrict: User cannot enter more than the allowed digits
+    const clampedDigits = raw.slice(0, country.digitsMax);
+    setPhoneNumber(clampedDigits);
+
+    if (clampedDigits.length > 0) {
+      setPhoneError(validatePhoneNumber(clampedDigits, selectedCountryCode));
+    } else {
+      setPhoneError("");
+    }
+  };
+
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCode = e.target.value;
+    setSelectedCountryCode(newCode);
+    const country = COUNTRY_CODES.find((c) => c.code === newCode) || COUNTRY_CODES[0];
+
+    // Re-clamp existing digits to the new country's maximum limit
+    const raw = phoneNumber.replace(/\D/g, "");
+    const clampedDigits = raw.slice(0, country.digitsMax);
+    setPhoneNumber(clampedDigits);
+
+    if (clampedDigits.length > 0) {
+      setPhoneError(validatePhoneNumber(clampedDigits, newCode));
+    } else {
+      setPhoneError("");
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
-        setFileError("File size must be less than 5MB");
+      const fileName = selectedFile.name.toLowerCase();
+      const validExtensions = [".pdf", ".doc", ".docx"];
+      const isValidExtension = validExtensions.some((ext) => fileName.endsWith(ext));
+
+      if (!isValidExtension) {
+        setFileError("Invalid file format. Only PDF and Word documents (.pdf, .doc, .docx) are accepted.");
         setFile(null);
-      } else {
-        setFileError("");
-        setFile(selectedFile);
+        return;
       }
+
+      if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
+        const sizeMb = (selectedFile.size / (1024 * 1024)).toFixed(1);
+        setFileError(`File size (${sizeMb} MB) exceeds the 5MB maximum limit. Please upload a smaller file.`);
+        setFile(null);
+        return;
+      }
+
+      setFileError("");
+      setFile(selectedFile);
     }
   };
 
   const onSubmit = async (data: ApplyFormValues) => {
+    const pError = validatePhoneNumber(phoneNumber, selectedCountryCode);
+    if (pError) {
+      setPhoneError(pError);
+    }
+
     if (!file) {
-      setFileError("Resume is required");
+      setFileError("Resume file is required (PDF or Word document)");
+    }
+
+    if (pError || !file) {
       return;
     }
-    
+
+    setPhoneError("");
+    setFileError("");
     setIsSubmitting(true);
     setSubmitError(null);
+
+    const rawDigits = phoneNumber.replace(/\D/g, "");
+    const formattedPhone = selectedCountryCode === "+other"
+      ? phoneNumber.trim()
+      : `${selectedCountryCode} ${rawDigits}`;
     
     try {
       await publicService.applyForJob({
         jobId: id,
-        ...data,
+        name: data.name,
+        email: data.email,
+        phone: formattedPhone,
+        coverLetter: data.coverLetter,
         resume: file,
       });
       setSuccess(true);
@@ -167,50 +287,127 @@ export const ApplyPage: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">Full Name <span className="text-destructive">*</span></label>
+              <label htmlFor="name" className="text-sm font-medium">
+                Full Name <span style={{ color: "#ef4444" }}>*</span>
+              </label>
               <input 
                 id="name" 
                 {...register("name")} 
-                className={`w-full p-3 rounded-md bg-background border ${errors.name ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary`} 
+                className="w-full p-3 rounded-md bg-background focus:outline-none transition-colors"
+                style={{
+                  border: errors.name ? "1px solid #ef4444" : "1px solid #1e293b",
+                  boxShadow: errors.name ? "0 0 0 1px rgba(239, 68, 68, 0.25)" : undefined,
+                }} 
                 placeholder="Jane Doe"
               />
-              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+              {errors.name && (
+                <p style={{ color: "#ef4444", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.35rem", marginTop: "0.35rem", fontFamily: "IBM Plex Mono, monospace" }}>
+                  <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                  <span>{errors.name.message}</span>
+                </p>
+              )}
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">Email Address <span className="text-destructive">*</span></label>
+              <label htmlFor="email" className="text-sm font-medium">
+                Email Address <span style={{ color: "#ef4444" }}>*</span>
+              </label>
               <input 
                 id="email" 
                 type="email"
                 {...register("email")} 
-                className={`w-full p-3 rounded-md bg-background border ${errors.email ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary`} 
+                className="w-full p-3 rounded-md bg-background focus:outline-none transition-colors"
+                style={{
+                  border: errors.email ? "1px solid #ef4444" : "1px solid #1e293b",
+                  boxShadow: errors.email ? "0 0 0 1px rgba(239, 68, 68, 0.25)" : undefined,
+                }} 
                 placeholder="jane@example.com"
               />
-              {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+              {errors.email && (
+                <p style={{ color: "#ef4444", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.35rem", marginTop: "0.35rem", fontFamily: "IBM Plex Mono, monospace" }}>
+                  <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                  <span>{errors.email.message}</span>
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Country Code & Phone Number Field */}
+          <div className="space-y-2">
+            <label htmlFor="phone" className="text-sm font-medium">
+              Phone Number <span style={{ color: "#ef4444" }}>*</span>
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <select
+                value={selectedCountryCode}
+                onChange={handleCountryChange}
+                className="p-3 rounded-md bg-background focus:outline-none transition-colors cursor-pointer text-sm font-medium"
+                style={{
+                  border: "1px solid #1e293b",
+                  minWidth: "160px",
+                  color: "#f8fafc",
+                  backgroundColor: "#050811",
+                }}
+              >
+                {COUNTRY_CODES.map((c) => (
+                  <option key={c.code} value={c.code} style={{ backgroundColor: "#050811", color: "#f8fafc" }}>
+                    {c.flag} {c.code} ({c.name.split(" / ")[0].split(" ")[0]})
+                  </option>
+                ))}
+              </select>
+
+              <input 
+                id="phone" 
+                type="tel"
+                value={phoneNumber}
+                maxLength={currentCountry.digitsMax}
+                onChange={handlePhoneChange}
+                className="w-full p-3 rounded-md bg-background focus:outline-none transition-colors font-mono"
+                style={{
+                  border: phoneError ? "1px solid #ef4444" : "1px solid #1e293b",
+                  boxShadow: phoneError ? "0 0 0 1px rgba(239, 68, 68, 0.25)" : undefined,
+                }} 
+                placeholder={currentCountry.placeholder}
+              />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.35rem" }}>
+              {phoneError ? (
+                <p style={{ color: "#ef4444", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.35rem", margin: 0, fontFamily: "IBM Plex Mono, monospace" }}>
+                  <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                  <span>{phoneError}</span>
+                </p>
+              ) : (
+                <span />
+              )}
+              {phoneNumber.length > 0 && (
+                <span style={{ fontSize: "0.75rem", color: phoneError ? "#ef4444" : "#64748b", fontFamily: "IBM Plex Mono, monospace", marginLeft: "auto" }}>
+                  {phoneNumber.length} / {currentCountry.digitsMax} digits
+                </span>
+              )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="phone" className="text-sm font-medium">Phone Number <span className="text-destructive">*</span></label>
-            <input 
-              id="phone" 
-              {...register("phone")} 
-              className={`w-full p-3 rounded-md bg-background border ${errors.phone ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary`} 
-              placeholder="+1 (555) 000-0000"
-            />
-            {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="resume" className="text-sm font-medium">Resume (PDF, Word) <span className="text-destructive">*</span></label>
+            <label htmlFor="resume" className="text-sm font-medium">
+              Resume (PDF, Word) <span style={{ color: "#ef4444" }}>*</span>
+            </label>
             <input 
               id="resume" 
               type="file"
               accept=".pdf,.doc,.docx"
               onChange={handleFileChange}
-              className={`w-full p-3 rounded-md bg-background border ${fileError ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20`} 
+              className="w-full p-3 rounded-md bg-background focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+              style={{
+                border: fileError ? "1px solid #ef4444" : "1px solid #1e293b",
+                boxShadow: fileError ? "0 0 0 1px rgba(239, 68, 68, 0.25)" : undefined,
+              }} 
             />
-            {fileError && <p className="text-xs text-destructive">{fileError}</p>}
+            {fileError && (
+              <p style={{ color: "#ef4444", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.35rem", marginTop: "0.35rem", fontFamily: "IBM Plex Mono, monospace" }}>
+                <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                <span>{fileError}</span>
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -219,7 +416,8 @@ export const ApplyPage: React.FC = () => {
               id="coverLetter" 
               rows={6}
               {...register("coverLetter")} 
-              className="w-full p-3 rounded-md bg-background border border-input focus:outline-none focus:ring-1 focus:ring-primary resize-none" 
+              className="w-full p-3 rounded-md bg-background focus:outline-none resize-none"
+              style={{ border: "1px solid #1e293b" }}
               placeholder="Tell us why you're a great fit for this role..."
             />
           </div>
