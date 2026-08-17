@@ -5,12 +5,48 @@ import * as z from "zod";
 import { publicService } from "../../services/publicService";
 import { Mail, Phone, MapPin, Clock, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 
+const nameRegex = /^[a-zA-Z\s'-]+$/;
+const phoneRegex = /^[\+]?[(]?[0-9]{1,4}[)]?[-\s\./0-9]*$/;
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 const contactSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Valid email is required"),
-  subject: z.string().min(3, "Subject is required"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  firstName: z
+    .string()
+    .transform((v) => v.trim())
+    .refine((v) => v.length > 0, { message: "First name is required." })
+    .refine((v) => v.length >= 2, { message: "First name must be at least 2 characters." })
+    .refine((v) => nameRegex.test(v), { message: "First name contains invalid characters." }),
+  lastName: z
+    .string()
+    .transform((v) => v.trim())
+    .refine((v) => v.length > 0, { message: "Last name is required." })
+    .refine((v) => nameRegex.test(v), { message: "Last name contains invalid characters." }),
+  email: z
+    .string()
+    .transform((v) => v.trim())
+    .refine((v) => v.length > 0, { message: "Please enter a valid work email." })
+    .refine((v) => emailRegex.test(v), { message: "Please enter a valid work email address." }),
+  phone: z
+    .string()
+    .transform((v) => v.trim())
+    .refine((v) => v.length > 0, { message: "Please enter a valid phone number." })
+    .refine((v) => phoneRegex.test(v), { message: "Phone number contains invalid characters." })
+    .refine((v) => {
+      const digits = v.replace(/\D/g, "");
+      return digits.length >= 7 && digits.length <= 15;
+    }, { message: "Please enter a valid phone number." }),
+  subject: z
+    .string()
+    .transform((v) => v.trim())
+    .refine((v) => v.length > 0, { message: "Subject is required." })
+    .refine((v) => v.length >= 3, { message: "Subject must be at least 3 characters." })
+    .refine((v) => v.length <= 100, { message: "Subject cannot exceed 100 characters." }),
+  message: z
+    .string()
+    .transform((v) => v.trim())
+    .refine((v) => v.length > 0, { message: "Please enter your message." })
+    .refine((v) => v.length >= 10, { message: "Message must be at least 10 characters." })
+    .refine((v) => v.length <= 2000, { message: "Message cannot exceed 2000 characters." }),
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
@@ -20,24 +56,33 @@ export const ContactPage: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<ContactFormValues>({
-    resolver: zodResolver(contactSchema)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactFormValues>({
+    resolver: zodResolver(contactSchema),
+    mode: "onTouched",
   });
 
   const onSubmit = async (data: ContactFormValues) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     setSubmitError(null);
+
     try {
       await publicService.submitContactForm({
         name: `${data.firstName} ${data.lastName}`.trim(),
         email: data.email,
-        phone: "+1 (555) 123-4567",
+        phone: data.phone,
         subject: data.subject,
         message: data.message,
       });
       setSuccess(true);
+      reset();
     } catch (err: any) {
-      setSubmitError(err.message || "Failed to send message. Please try again.");
+      setSubmitError(err?.message || "Failed to send message. Please check your network connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -136,7 +181,10 @@ export const ContactPage: React.FC = () => {
                     Thank you for reaching out. A member of our team will get back to you shortly.
                   </p>
                   <button 
-                    onClick={() => setSuccess(false)} 
+                    onClick={() => {
+                      setSuccess(false);
+                      setSubmitError(null);
+                    }} 
                     className="mt-8 text-primary hover:underline text-sm font-medium transition-colors"
                   >
                     Send another message
@@ -151,89 +199,138 @@ export const ContactPage: React.FC = () => {
                   {submitError && (
                     <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg flex items-start gap-3">
                       <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
-                      <p className="text-sm">{submitError}</p>
+                      <div className="flex-1 text-sm">
+                        <p className="font-medium mb-0.5">Submission Error</p>
+                        <p className="text-xs opacity-90">{submitError}</p>
+                      </div>
                     </div>
                   )}
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
                     {/* Row 1: First Name | Last Name */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label htmlFor="firstName" className="block text-sm font-medium text-muted-foreground">
-                          First Name
+                          First Name <span className="text-destructive">*</span>
                         </label>
                         <input 
                           id="firstName" 
                           {...register("firstName")} 
-                          className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.firstName ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
+                          aria-invalid={!!errors.firstName}
+                          className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.firstName ? 'border-destructive ring-1 ring-destructive/30' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
                           placeholder="John"
                         />
-                        {errors.firstName && <p className="text-xs text-destructive mt-1">{errors.firstName.message}</p>}
+                        {errors.firstName && (
+                          <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                            {errors.firstName.message}
+                          </p>
+                        )}
                       </div>
                       
                       <div className="space-y-2">
                         <label htmlFor="lastName" className="block text-sm font-medium text-muted-foreground">
-                          Last Name
+                          Last Name <span className="text-destructive">*</span>
                         </label>
                         <input 
                           id="lastName" 
                           {...register("lastName")} 
-                          className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.lastName ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
+                          aria-invalid={!!errors.lastName}
+                          className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.lastName ? 'border-destructive ring-1 ring-destructive/30' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
                           placeholder="Doe"
                         />
-                        {errors.lastName && <p className="text-xs text-destructive mt-1">{errors.lastName.message}</p>}
+                        {errors.lastName && (
+                          <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                            {errors.lastName.message}
+                          </p>
+                        )}
                       </div>
                     </div>
 
-                    {/* Row 2: Email */}
-                    <div className="space-y-2">
-                      <label htmlFor="email" className="block text-sm font-medium text-muted-foreground">
-                        Email
-                      </label>
-                      <input 
-                        id="email" 
-                        type="email"
-                        {...register("email")} 
-                        className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.email ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
-                        placeholder="john@company.com"
-                      />
-                      {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+                    {/* Row 2: Work Email | Phone */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label htmlFor="email" className="block text-sm font-medium text-muted-foreground">
+                          Work Email <span className="text-destructive">*</span>
+                        </label>
+                        <input 
+                          id="email" 
+                          type="email"
+                          {...register("email")} 
+                          aria-invalid={!!errors.email}
+                          className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.email ? 'border-destructive ring-1 ring-destructive/30' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
+                          placeholder="john@company.com"
+                        />
+                        {errors.email && (
+                          <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                            {errors.email.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <label htmlFor="phone" className="block text-sm font-medium text-muted-foreground">
+                          Phone <span className="text-destructive">*</span>
+                        </label>
+                        <input 
+                          id="phone" 
+                          type="tel"
+                          {...register("phone")} 
+                          aria-invalid={!!errors.phone}
+                          className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.phone ? 'border-destructive ring-1 ring-destructive/30' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
+                          placeholder="+1 (555) 123-4567"
+                        />
+                        {errors.phone && (
+                          <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                            {errors.phone.message}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     {/* Row 3: Subject */}
                     <div className="space-y-2">
                       <label htmlFor="subject" className="block text-sm font-medium text-muted-foreground">
-                        Subject
+                        Subject <span className="text-destructive">*</span>
                       </label>
                       <input 
                         id="subject" 
                         {...register("subject")} 
-                        className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.subject ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
-                        placeholder="Inquiry about custom solutions"
+                        aria-invalid={!!errors.subject}
+                        className={`w-full h-11 px-3.5 py-2.5 rounded-md bg-background border ${errors.subject ? 'border-destructive ring-1 ring-destructive/30' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground transition-colors`} 
+                        placeholder="Inquiry about custom enterprise solutions"
                       />
-                      {errors.subject && <p className="text-xs text-destructive mt-1">{errors.subject.message}</p>}
+                      {errors.subject && (
+                        <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                          {errors.subject.message}
+                        </p>
+                      )}
                     </div>
 
                     {/* Row 4: Message */}
                     <div className="space-y-2">
                       <label htmlFor="message" className="block text-sm font-medium text-muted-foreground">
-                        Message
+                        Message <span className="text-destructive">*</span>
                       </label>
                       <textarea 
                         id="message" 
                         rows={5}
                         {...register("message")} 
-                        className={`w-full p-3.5 rounded-md bg-background border ${errors.message ? 'border-destructive' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground resize-none transition-colors`} 
+                        aria-invalid={!!errors.message}
+                        className={`w-full p-3.5 rounded-md bg-background border ${errors.message ? 'border-destructive ring-1 ring-destructive/30' : 'border-input'} focus:outline-none focus:ring-1 focus:ring-primary text-sm text-foreground resize-none transition-colors`} 
                         placeholder="Write your message here..."
                       />
-                      {errors.message && <p className="text-xs text-destructive mt-1">{errors.message.message}</p>}
+                      {errors.message && (
+                        <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                          {errors.message.message}
+                        </p>
+                      )}
                     </div>
 
                     {/* Submit Button */}
                     <button 
                       type="submit" 
                       disabled={isSubmitting}
-                      className="w-full inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm shadow-sm"
+                      className="w-full inline-flex h-12 items-center justify-center rounded-md bg-primary px-8 font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm shadow-sm cursor-pointer"
                     >
                       {isSubmitting ? (
                         <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Sending...</>

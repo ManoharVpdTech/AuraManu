@@ -4,7 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 
 export const CaseStudiesCTA = () => {
   return (
-    <section className="py-20 bg-[#080d16] border-t border-border/10 relative overflow-hidden">
+    <section className="pt-8 pb-16 sm:pt-10 sm:pb-20 bg-[#080d16] border-t border-border/10 relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center border border-[#1b2b3d] bg-[#0b1420] p-10 md:p-14 rounded-2xl">
           <div className="inline-flex items-center gap-2 mb-4">

@@ -10,7 +10,7 @@ export const EngineeringCapabilities = () => {
   ];
 
   return (
-    <section className="py-24 bg-[#0a0f18] border-t border-border/10">
+    <section className="pt-16 pb-8 sm:pt-20 sm:pb-10 bg-[#0a0f18] border-t border-border/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl font-bold text-white mb-4">Engineering Capabilities</h2>
