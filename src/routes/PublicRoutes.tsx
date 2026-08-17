@@ -43,8 +43,8 @@ export const PublicRoutes: React.FC = () => {
         <Route path="/case-studies/:slug" component={CaseStudyDetailsPage} />
         
         <Route path="/careers" component={CareersPage} />
-        <Route path="/careers/:id" component={JobDetailsPage} />
         <Route path="/careers/:id/apply" component={ApplyPage} />
+        <Route path="/careers/:id" component={JobDetailsPage} />
         
         <Route path="/insights" component={InsightsPage} />
         <Route path="/insights/:slug" component={ArticleDetailPage} />

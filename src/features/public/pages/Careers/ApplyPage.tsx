@@ -8,9 +8,12 @@ import { publicService } from "../../services/publicService";
 import { ArrowLeft, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
 const applySchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  email: z.string().email("Valid email is required"),
-  phone: z.string().min(5, "Phone number is required"),
+  name: z.string().min(2, "Full name is required"),
+  email: z.string().email("Valid email address is required"),
+  phone: z.string()
+    .min(7, "Phone number is too short")
+    .max(20, "Phone number is too long")
+    .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]+$/, "Please enter a valid phone number (digits and optional country code only)"),
   coverLetter: z.string().optional(),
 });
 
@@ -62,7 +65,30 @@ export const ApplyPage: React.FC = () => {
       });
       setSuccess(true);
     } catch (err: any) {
-      setSubmitError(err.response?.data?.message || "Failed to submit application. Please try again.");
+      const res = err.response?.data;
+      let errorMsg = "Failed to submit application. Please check your details and try again.";
+      
+      if (typeof res === "string") {
+        errorMsg = res;
+      } else if (res?.message) {
+        errorMsg = res.message;
+      } else if (res?.detail) {
+        errorMsg = res.detail;
+      } else if (res && typeof res === "object") {
+        const errorList: string[] = [];
+        for (const [key, value] of Object.entries(res)) {
+          const formattedKey = key.replace(/_/g, " ").toUpperCase();
+          const valMsg = Array.isArray(value) ? value.join(", ") : String(value);
+          errorList.push(`${formattedKey}: ${valMsg}`);
+        }
+        if (errorList.length > 0) {
+          errorMsg = errorList.join(" | ");
+        }
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+      
+      setSubmitError(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -108,14 +134,26 @@ export const ApplyPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-background pt-16 pb-24">
+    <div className="bg-background pt-32 sm:pt-36 pb-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-        <Link href={`/careers/${id}`} className="inline-flex items-center text-sm font-mono text-muted-foreground hover:text-primary mb-8 transition-colors">
+        <Link href={`/careers/${id}`} className="inline-flex items-center text-sm font-mono text-muted-foreground hover:text-primary mb-6 transition-colors">
           <ArrowLeft className="mr-2 h-4 w-4" /> BACK TO JOB DESCRIPTION
         </Link>
         
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold tracking-tight mb-4">Apply for {job.title}</h1>
+        <div className="mb-10">
+          <h1 
+            style={{ 
+              fontSize: "clamp(1.85rem, 3.2vw, 2.35rem)", 
+              lineHeight: "1.25", 
+              fontWeight: 700, 
+              letterSpacing: "-0.015em", 
+              margin: "0.25rem 0 0.75rem",
+              color: "#f8fafc",
+              maxWidth: "100%" 
+            }}
+          >
+            Apply for {job.title}
+          </h1>
           <p className="text-muted-foreground">Please fill out the form below to submit your application.</p>
         </div>
 

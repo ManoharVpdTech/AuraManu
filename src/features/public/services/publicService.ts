@@ -47,7 +47,10 @@ export const publicService = {
     formData.append("last_name", lastName);
     formData.append("email", data.email);
     formData.append("phone", data.phone);
-    if (data.coverLetter) formData.append("coverLetter", data.coverLetter);
+    if (data.coverLetter) {
+      formData.append("cover_letter", data.coverLetter);
+      formData.append("coverLetter", data.coverLetter);
+    }
     if (data.resume) formData.append("resume", data.resume);
 
     await axiosClient.post(API_ENDPOINTS.RECRUITMENT.PUBLIC_APPLY, formData, {
