@@ -1000,3 +1000,14 @@ h1 em, h2 em, h3 em { font-style: normal; color: #b7c4c5; }
 .orb-node-bl { bottom: 16%; left: -6%; }
 .orb-node-tl { top: 16%; left: -6%; }
 
+/* Universal Scrollbar Hide Utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+

@@ -2,35 +2,42 @@ import React from "react";
 
 export const CategoryNavigation = ({ categories, activeCategory, setActiveCategory }) => {
   return (
-    <div className="w-full border-b border-border/10 mb-12">
+    <div className="w-full border-b border-[rgba(140,174,187,0.15)] mb-10 bg-[#050811]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex overflow-x-auto hide-scrollbar space-x-8 py-4">
+        <div 
+          className="flex overflow-x-auto hide-scrollbar gap-2 py-3 scroll-smooth"
+          style={{ msOverflowStyle: "none", scrollbarWidth: "none" }}
+        >
           <button
             onClick={() => setActiveCategory("")}
-            className={`whitespace-nowrap pb-2 text-sm font-bold transition-colors ${
+            className={`whitespace-nowrap px-4 py-2 text-xs font-semibold tracking-wider rounded-md transition-all ${
               activeCategory === ""
-                ? "text-primary border-b-2 border-primary"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-[#63f5e8] text-[#041014] shadow-[0_0_15px_rgba(99,245,232,0.25)] font-bold"
+                : "text-[#8da5ae] hover:text-white hover:bg-[rgba(140,174,187,0.08)]"
             }`}
           >
-            ALL
+            ALL CATEGORIES
           </button>
           
-          {categories.map(category => (
-            <button
-              key={category.slug}
-              onClick={() => setActiveCategory(category.slug)}
-              className={`whitespace-nowrap pb-2 text-sm font-bold uppercase tracking-wider transition-colors ${
-                activeCategory === category.slug
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
+          {categories.map(category => {
+            const isActive = activeCategory === category.slug;
+            return (
+              <button
+                key={category.slug}
+                onClick={() => setActiveCategory(category.slug)}
+                className={`whitespace-nowrap px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-md transition-all ${
+                  isActive
+                    ? "bg-[#63f5e8] text-[#041014] shadow-[0_0_15px_rgba(99,245,232,0.25)] font-bold"
+                    : "text-[#8da5ae] hover:text-white hover:bg-[rgba(140,174,187,0.08)]"
+                }`}
+              >
+                {category.name}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 };
+
