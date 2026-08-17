@@ -22,6 +22,7 @@ export const Footer: React.FC = () => {
             <h3 className="font-semibold text-foreground mb-4">Company</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link href="/why-us" className="hover:text-primary transition-colors">Why Choose Us</Link></li>
               <li><Link href="/careers" className="hover:text-primary transition-colors">Careers</Link></li>
               <li><Link href="/insights" className="hover:text-primary transition-colors">Insights</Link></li>
               <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
@@ -35,16 +36,17 @@ export const Footer: React.FC = () => {
               <li><Link href="/industries" className="hover:text-primary transition-colors">Industries</Link></li>
               <li><Link href="/case-studies" className="hover:text-primary transition-colors">Case Studies</Link></li>
               <li><Link href="/estimator" className="hover:text-primary transition-colors">Project Estimator</Link></li>
+              <li><Link href="/rfp" className="hover:text-primary transition-colors">Submit RFP</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Connect</h3>
+            <h3 className="font-semibold text-foreground mb-4">Legal &amp; Security</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">LinkedIn</a></li>
-              <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Twitter</a></li>
-              <li><a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">GitHub</a></li>
-              <li><Link href="/rfp" className="hover:text-primary transition-colors">Submit RFP</Link></li>
+              <li><Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="hover:text-primary transition-colors">Terms &amp; Conditions</Link></li>
+              <li><Link href="/cookie-policy" className="hover:text-primary transition-colors">Cookie Policy</Link></li>
+              <li><Link href="/security" className="hover:text-primary transition-colors">Security Governance</Link></li>
             </ul>
           </div>
 
@@ -52,11 +54,12 @@ export const Footer: React.FC = () => {
 
         <div className="border-t border-border/40 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {currentYear} Aurexion. All rights reserved.
+            &copy; {currentYear} Aurexion Technologies. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+            <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+            <Link href="/cookie-policy" className="hover:text-primary transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>
